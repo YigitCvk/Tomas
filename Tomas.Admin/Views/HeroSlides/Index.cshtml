@@ -1,0 +1,108 @@
+@using Tomas.Domain.Entities
+@model List<HeroSlide>
+@{
+    ViewData["Title"] = "Hero Slider";
+    int page = ViewBag.Page;
+    int pageSize = ViewBag.PageSize;
+    int total = ViewBag.Total;
+    int totalPages = (int)Math.Ceiling(total / (double)pageSize);
+}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Hero Slider <span style="font-weight:400;font-size:13px;color:#64748b">(Toplam: @total)</span></h2>
+        <a href="@Url.Action("Create")" class="btn btn-primary btn-sm">+ Yeni Slide</a>
+    </div>
+    <div class="card-body" style="padding-bottom:8px">
+        <form method="get" class="search-bar" style="margin-bottom:16px">
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Slide ara..." class="form-control"/>
+            <button type="submit" class="btn btn-outline btn-sm">🔍 Ara</button>
+            @if (!string.IsNullOrEmpty(ViewBag.Search?.ToString()))
+            {
+                <a href="@Url.Action("Index")" class="btn btn-outline btn-sm">✕ Temizle</a>
+            }
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Görsel</th>
+                    <th>Başlık / Alt Başlık</th>
+                    <th>Butonlar</th>
+                    <th>Dil</th>
+                    <th>Sıra</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="color:#94a3b8">@item.Id</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                            {
+                                <img src="@item.ImagePath" alt="" class="image-preview" style="width:80px;height:48px"/>
+                            }
+                            else
+                            {
+                                <div style="width:80px;height:48px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px">🖼️</div>
+                            }
+                        </td>
+                        <td>
+                            <div style="font-weight:500">@item.Title</div>
+                            @if (!string.IsNullOrEmpty(item.Subtitle))
+                            {
+                                <div style="font-size:12px;color:#94a3b8;margin-top:2px">@item.Subtitle</div>
+                            }
+                        </td>
+                        <td style="font-size:12px;color:#64748b">
+                            @if (!string.IsNullOrEmpty(item.PrimaryButtonText)) { <div>→ @item.PrimaryButtonText</div> }
+                            @if (!string.IsNullOrEmpty(item.SecondaryButtonText)) { <div>→ @item.SecondaryButtonText</div> }
+                        </td>
+                        <td><span style="font-size:12px;font-weight:600;background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:10px">@item.LanguageCode.ToUpper()</span></td>
+                        <td style="text-align:center">@item.SortOrder</td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="status-badge status-active">● Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-inactive">● Pasif</span>
+                            }
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px">
+                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-outline btn-sm">✏️ Düzenle</a>
+                                <form method="post" asp-action="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Bu slide\'ı silmek istediğinize emin misiniz?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" style="text-align:center;padding:40px;color:#94a3b8">Henüz hero slide eklenmemiş.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (totalPages > 1)
+    {
+        <div class="card-body" style="padding-top:8px">
+            <div class="pagination">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <a href="@Url.Action("Index", new { page = i, search = ViewBag.Search })"
+                       class="page-btn @(i == page ? "active" : "")">@i</a>
+                }
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,108 @@
+@using Tomas.Domain.Entities
+@model List<Testimonial>
+@{
+    ViewData["Title"] = "Müşteri Yorumları";
+    int page = ViewBag.Page;
+    int pageSize = ViewBag.PageSize;
+    int total = ViewBag.Total;
+    int totalPages = (int)Math.Ceiling(total / (double)pageSize);
+}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Müşteri Yorumları <span style="font-weight:400;font-size:13px;color:#64748b">(Toplam: @total)</span></h2>
+        <a href="@Url.Action("Create")" class="btn btn-primary btn-sm">+ Yeni Yorum</a>
+    </div>
+    <div class="card-body" style="padding-bottom:8px">
+        <form method="get" class="search-bar" style="margin-bottom:16px">
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="İsim veya şirket ara..." class="form-control"/>
+            <button type="submit" class="btn btn-outline btn-sm">🔍 Ara</button>
+            @if (!string.IsNullOrEmpty(ViewBag.Search?.ToString()))
+            {
+                <a href="@Url.Action("Index")" class="btn btn-outline btn-sm">✕ Temizle</a>
+            }
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Avatar</th>
+                    <th>Yazar</th>
+                    <th>Yorum</th>
+                    <th>Puan</th>
+                    <th>Dil</th>
+                    <th>Sıra</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="color:#94a3b8">@item.Id</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.AvatarPath))
+                            {
+                                <img src="@item.AvatarPath" alt="" style="width:40px;height:40px;border-radius:50%;object-fit:cover"/>
+                            }
+                            else
+                            {
+                                <div style="width:40px;height:40px;background:#0f2550;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#d4a017;font-weight:700;font-size:16px">@item.AuthorName.First()</div>
+                            }
+                        </td>
+                        <td>
+                            <div style="font-weight:500">@item.AuthorName</div>
+                            <div style="font-size:12px;color:#94a3b8">@item.AuthorTitle @(!string.IsNullOrEmpty(item.Company) ? "· " + item.Company : "")</div>
+                        </td>
+                        <td style="max-width:200px">
+                            <div style="font-size:13px;color:#475569">@(item.Content.Length > 70 ? item.Content[..70] + "…" : item.Content)</div>
+                        </td>
+                        <td>
+                            <span style="color:#d4a017;font-size:14px">@string.Concat(Enumerable.Repeat("★", item.Rating))</span>
+                        </td>
+                        <td><span style="font-size:12px;font-weight:600;background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:10px">@item.LanguageCode.ToUpper()</span></td>
+                        <td style="text-align:center">@item.SortOrder</td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="status-badge status-active">● Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-inactive">● Pasif</span>
+                            }
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px">
+                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-outline btn-sm">✏️ Düzenle</a>
+                                <form method="post" asp-action="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Bu yorumu silmek istediğinize emin misiniz?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="9" style="text-align:center;padding:40px;color:#94a3b8">Henüz müşteri yorumu eklenmemiş.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (totalPages > 1)
+    {
+        <div class="card-body" style="padding-top:8px">
+            <div class="pagination">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <a href="@Url.Action("Index", new { page = i, search = ViewBag.Search })"
+                       class="page-btn @(i == page ? "active" : "")">@i</a>
+                }
+            </div>
+        </div>
+    }
+</div>
