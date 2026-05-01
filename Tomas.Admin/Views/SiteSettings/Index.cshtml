@@ -1,0 +1,151 @@
+@model Dictionary<string, string>
+@{
+    ViewData["Title"] = "Site Ayarları";
+    string Val(string key) => Model.TryGetValue(key, out var v) ? v ?? "" : "";
+}
+
+<form method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+
+        <!-- Sol kolon -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+            <div class="card">
+                <div class="card-header"><h2>Genel Bilgiler</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Site Adı</label>
+                        <input type="text" name="settings[SiteName]" value="@Val("SiteName")" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Site Açıklaması</label>
+                        <textarea name="settings[SiteDescription]" class="form-control" rows="2">@Val("SiteDescription")</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Varsayılan Dil</label>
+                        <select name="settings[DefaultLanguage]" class="form-control">
+                            @{
+                                var defLang = Val("DefaultLanguage");
+                            }
+                            <option value="tr" selected="@(defLang == "tr" ? "selected" : null)">Türkçe</option>
+                            <option value="en" selected="@(defLang == "en" ? "selected" : null)">English</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h2>İletişim Bilgileri</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Telefon</label>
+                        <input type="text" name="settings[Phone]" value="@Val("Phone")" class="form-control" placeholder="+90 212 000 00 00"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">GSM / Cep</label>
+                        <input type="text" name="settings[GSM]" value="@Val("GSM")" class="form-control" placeholder="+90 532 000 00 00"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">E-posta</label>
+                        <input type="email" name="settings[Email]" value="@Val("Email")" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Adres</label>
+                        <textarea name="settings[Address]" class="form-control" rows="3">@Val("Address")</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">WhatsApp Numarası</label>
+                        <input type="text" name="settings[WhatsApp]" value="@Val("WhatsApp")" class="form-control" placeholder="905321234567"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h2>Sosyal Medya</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">LinkedIn URL</label>
+                        <input type="url" name="settings[LinkedIn]" value="@Val("LinkedIn")" class="form-control" placeholder="https://linkedin.com/company/..."/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Instagram URL</label>
+                        <input type="url" name="settings[Instagram]" value="@Val("Instagram")" class="form-control" placeholder="https://instagram.com/..."/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Facebook URL</label>
+                        <input type="url" name="settings[Facebook]" value="@Val("Facebook")" class="form-control" placeholder="https://facebook.com/..."/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">X (Twitter) URL</label>
+                        <input type="url" name="settings[Twitter]" value="@Val("Twitter")" class="form-control" placeholder="https://x.com/..."/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ kolon -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+            <div class="card">
+                <div class="card-header"><h2>SEO & Meta</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Varsayılan Meta Başlık <small style="color:#94a3b8">(max 70 karakter)</small></label>
+                        <input type="text" name="settings[MetaTitle]" value="@Val("MetaTitle")" class="form-control" maxlength="70"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Varsayılan Meta Açıklama <small style="color:#94a3b8">(max 160 karakter)</small></label>
+                        <textarea name="settings[MetaDescription]" class="form-control" rows="3" maxlength="160">@Val("MetaDescription")</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Google Analytics ID</label>
+                        <input type="text" name="settings[GoogleAnalyticsId]" value="@Val("GoogleAnalyticsId")" class="form-control" placeholder="G-XXXXXXXXXX"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Google Tag Manager ID</label>
+                        <input type="text" name="settings[GoogleTagManagerId]" value="@Val("GoogleTagManagerId")" class="form-control" placeholder="GTM-XXXXXXX"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h2>Logo & Görseller</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Logo Yolu</label>
+                        @if (!string.IsNullOrEmpty(Val("LogoPath")))
+                        {
+                            <img src="@Val("LogoPath")" alt="Logo" style="max-height:48px;display:block;margin-bottom:8px;border:1px solid #e2e8f0;border-radius:6px;padding:4px"/>
+                        }
+                        <input type="file" name="logoFile" accept=".jpg,.jpeg,.png,.webp" class="form-control"/>
+                        <input type="hidden" name="settings[LogoPath]" value="@Val("LogoPath")"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Footer Logo Yolu</label>
+                        @if (!string.IsNullOrEmpty(Val("FooterLogoPath")))
+                        {
+                            <img src="@Val("FooterLogoPath")" alt="Footer Logo" style="max-height:48px;display:block;margin-bottom:8px;border:1px solid #e2e8f0;border-radius:6px;padding:4px"/>
+                        }
+                        <input type="file" name="footerLogoFile" accept=".jpg,.jpeg,.png,.webp" class="form-control"/>
+                        <input type="hidden" name="settings[FooterLogoPath]" value="@Val("FooterLogoPath")"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Varsayılan OG Görseli</label>
+                        @if (!string.IsNullOrEmpty(Val("DefaultOgImagePath")))
+                        {
+                            <img src="@Val("DefaultOgImagePath")" alt="OG Image" class="image-preview" style="margin-bottom:8px"/>
+                        }
+                        <input type="file" name="ogImageFile" accept=".jpg,.jpeg,.png,.webp" class="form-control"/>
+                        <input type="hidden" name="settings[DefaultOgImagePath]" value="@Val("DefaultOgImagePath")"/>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+                <button type="submit" class="btn btn-primary">💾 Ayarları Kaydet</button>
+            </div>
+        </div>
+    </div>
+</form>

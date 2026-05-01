@@ -1,0 +1,96 @@
+@using Tomas.Domain.Entities
+@model List<Service>
+@{
+    ViewData["Title"] = "Hizmetler";
+    int page = ViewBag.Page;
+    int pageSize = ViewBag.PageSize;
+    int total = ViewBag.Total;
+    int totalPages = (int)Math.Ceiling(total / (double)pageSize);
+}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Hizmet Listesi <span style="font-weight:400;font-size:13px;color:#64748b">(Toplam: @total)</span></h2>
+        <a href="@Url.Action("Create")" class="btn btn-primary btn-sm">+ Yeni Hizmet</a>
+    </div>
+    <div class="card-body" style="padding-bottom:8px">
+        <form method="get" class="search-bar" style="margin-bottom:16px">
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Hizmet ara..." class="form-control"/>
+            <button type="submit" class="btn btn-outline btn-sm">🔍 Ara</button>
+            @if (!string.IsNullOrEmpty(ViewBag.Search?.ToString()))
+            {
+                <a href="@Url.Action("Index")" class="btn btn-outline btn-sm">✕ Temizle</a>
+            }
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Başlık</th>
+                    <th>Slug</th>
+                    <th>Dil</th>
+                    <th>Sıra</th>
+                    <th>Durum</th>
+                    <th>Tarih</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="color:#94a3b8">@item.Id</td>
+                        <td>
+                            <div style="font-weight:500">@item.Icon @item.Title</div>
+                            @if (!string.IsNullOrEmpty(item.ShortDescription))
+                            {
+                                <div style="font-size:12px;color:#94a3b8;margin-top:2px">@(item.ShortDescription.Length > 60 ? item.ShortDescription[..60] + "…" : item.ShortDescription)</div>
+                            }
+                        </td>
+                        <td><code style="font-size:12px;background:#f1f5f9;padding:2px 6px;border-radius:4px">@item.Slug</code></td>
+                        <td><span style="font-size:12px;font-weight:600;background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:10px">@item.LanguageCode.ToUpper()</span></td>
+                        <td style="text-align:center">@item.SortOrder</td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="status-badge status-active">● Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-inactive">● Pasif</span>
+                            }
+                        </td>
+                        <td style="font-size:12px;color:#94a3b8">@item.CreatedAt.ToString("dd.MM.yy")</td>
+                        <td>
+                            <div style="display:flex;gap:6px">
+                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-outline btn-sm">✏️ Düzenle</a>
+                                <form method="post" asp-action="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8" style="text-align:center;padding:32px;color:#94a3b8">Kayıt bulunamadı.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (totalPages > 1)
+    {
+        <div class="card-body" style="padding-top:8px">
+            <div class="pagination">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <a href="@Url.Action("Index", new { page = i, search = ViewBag.Search })"
+                       class="page-btn @(i == page ? "active" : "")">@i</a>
+                }
+            </div>
+        </div>
+    }
+</div>

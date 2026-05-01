@@ -1,0 +1,73 @@
+@model Tomas.Application.DTOs.BlogPostFormDto
+@{
+    ViewData["Title"] = "Yeni Blog Yazısı";
+}
+<div class="breadcrumb">
+    <a href="@Url.Action("Index","BlogPosts")">Blog</a>
+    <span class="breadcrumb-sep">›</span><span>Yeni Yazı</span>
+</div>
+<form method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start">
+        <div>
+            <div class="card">
+                <div class="card-header"><h2>İçerik</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Başlık *</label>
+                        <input asp-for="Title" class="form-control" required/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Slug</label>
+                        <input asp-for="Slug" class="form-control" placeholder="otomatik"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Özet</label>
+                        <textarea asp-for="Summary" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">İçerik (HTML)</label>
+                        <textarea asp-for="Content" class="form-control" rows="12"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="margin-top:16px">
+                <div class="card-header"><h2>SEO</h2></div>
+                <div class="card-body">
+                    <div class="form-group"><label class="form-label">Meta Başlık</label><input asp-for="MetaTitle" class="form-control"/></div>
+                    <div class="form-group"><label class="form-label">Meta Açıklama</label><textarea asp-for="MetaDescription" class="form-control" rows="2"></textarea></div>
+                    <div class="form-grid">
+                        <div class="form-group"><label class="form-label">Canonical</label><input asp-for="CanonicalUrl" class="form-control"/></div>
+                        <div class="form-group"><label class="form-label">OG Görsel</label><input asp-for="OgImagePath" class="form-control"/></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="card">
+                <div class="card-header"><h2>Ayarlar</h2></div>
+                <div class="card-body">
+                    <div class="form-group"><label class="form-label">Yazar</label><input asp-for="Author" class="form-control"/></div>
+                    <div class="form-group"><label class="form-label">Dil</label>
+                        <select asp-for="LanguageCode" class="form-control"><option value="tr">Türkçe</option><option value="en">English</option></select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Yayın Tarihi</label><input asp-for="PublishedAt" type="datetime-local" class="form-control"/></div>
+                    <div class="form-group"><label class="form-label">Sıralama</label><input asp-for="SortOrder" type="number" class="form-control"/></div>
+                    <div class="form-check form-group">
+                        <input asp-for="IsActive" type="checkbox"/><label class="form-label" style="margin:0">Aktif</label>
+                    </div>
+                    <hr class="section-divider"/>
+                    <div class="form-group">
+                        <label class="form-label">Kapak Görseli</label>
+                        <input type="file" name="imageFile" accept=".jpg,.jpeg,.png,.webp" class="form-control"/>
+                    </div>
+                    <input asp-for="ImagePath" type="hidden"/>
+                </div>
+            </div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+                <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+                <a href="@Url.Action("Index")" class="btn btn-outline">İptal</a>
+            </div>
+        </div>
+    </div>
+</form>

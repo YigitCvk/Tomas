@@ -1,0 +1,120 @@
+@model Tomas.Application.DTOs.PageFormDto
+@{
+    ViewData["Title"] = "Sayfa Düzenle";
+}
+
+<div class="breadcrumb">
+    <a href="@Url.Action("Index","Pages")">Sayfalar</a>
+    <span>›</span>
+    <span>Düzenle</span>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden"/>
+    <div asp-validation-summary="All" class="validation-summary-errors"></div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start">
+        <div>
+            <div class="card">
+                <div class="card-header"><h2>Sayfa Bilgileri</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Başlık *</label>
+                        <input asp-for="Title" class="form-control" required/>
+                        <span asp-validation-for="Title" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Slug</label>
+                        <div style="display:flex;gap:8px">
+                            <input asp-for="Slug" id="slugInput" class="form-control"/>
+                            <button type="button" onclick="generateSlug()" class="btn btn-outline btn-sm" style="white-space:nowrap">🔄 Üret</button>
+                        </div>
+                        <span asp-validation-for="Slug" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kısa Açıklama</label>
+                        <textarea asp-for="ShortDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">İçerik (HTML)</label>
+                        <textarea asp-for="Content" class="form-control" rows="14"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:16px">
+                <div class="card-header"><h2>SEO Alanları</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Meta Başlık <small style="color:#94a3b8">(max 70 karakter)</small></label>
+                        <input asp-for="MetaTitle" class="form-control" maxlength="70"/>
+                        <span asp-validation-for="MetaTitle" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Meta Açıklama <small style="color:#94a3b8">(max 160 karakter)</small></label>
+                        <textarea asp-for="MetaDescription" class="form-control" rows="2" maxlength="160"></textarea>
+                        <span asp-validation-for="MetaDescription" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Canonical URL</label>
+                            <input asp-for="CanonicalUrl" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">OG Görsel Yolu</label>
+                            <input asp-for="OgImagePath" class="form-control"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <div class="card-header"><h2>Ayarlar</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Dil</label>
+                        <select asp-for="LanguageCode" class="form-control">
+                            <option value="tr">Türkçe</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sıralama</label>
+                        <input asp-for="SortOrder" type="number" min="0" class="form-control"/>
+                        <span asp-validation-for="SortOrder" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-check form-group">
+                        <input asp-for="IsActive" type="checkbox" id="isActive"/>
+                        <label for="isActive" class="form-label" style="margin:0">Aktif</label>
+                    </div>
+                    <hr class="section-divider"/>
+                    <div class="form-group">
+                        <label class="form-label">Kapak Görseli</label>
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <img src="@Model.ImagePath" alt="Kapak" class="image-preview" style="margin-bottom:8px;display:block"/>
+                        }
+                        <input type="file" name="imageFile" accept=".jpg,.jpeg,.png,.webp" class="form-control"/>
+                    </div>
+                    <input asp-for="ImagePath" type="hidden"/>
+                </div>
+            </div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+                <button type="submit" class="btn btn-primary">💾 Güncelle</button>
+                <a href="@Url.Action("Index")" class="btn btn-outline">İptal</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    function generateSlug() {
+        fetch('@Url.Action("GenerateSlug","Pages")' + '?title=' + encodeURIComponent(document.querySelector('[name="Title"]').value))
+            .then(r => r.json()).then(slug => { document.getElementById('slugInput').value = slug; });
+    }
+</script>
+}

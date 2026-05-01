@@ -1,0 +1,76 @@
+@using Tomas.Domain.Entities
+@model List<BlogPost>
+@{
+    ViewData["Title"] = "Blog / Haberler";
+    int page = ViewBag.Page;
+    int pageSize = ViewBag.PageSize;
+    int total = ViewBag.Total;
+    int totalPages = (int)Math.Ceiling(total / (double)pageSize);
+}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Blog Yazıları <span style="font-weight:400;font-size:13px;color:#64748b">(Toplam: @total)</span></h2>
+        <a href="@Url.Action("Create")" class="btn btn-primary btn-sm">+ Yeni Yazı</a>
+    </div>
+    <div class="card-body" style="padding-bottom:8px">
+        <form method="get" class="search-bar" style="margin-bottom:16px">
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Yazı ara..." class="form-control"/>
+            <button type="submit" class="btn btn-outline btn-sm">🔍 Ara</button>
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th><th>Başlık</th><th>Yazar</th><th>Dil</th><th>Yayın Tarihi</th><th>Durum</th><th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="color:#94a3b8">@item.Id</td>
+                        <td>
+                            <div style="font-weight:500">@item.Title</div>
+                            <code style="font-size:11px;color:#94a3b8">@item.Slug</code>
+                        </td>
+                        <td>@(item.Author ?? "—")</td>
+                        <td><span style="font-size:12px;font-weight:600;background:#dbeafe;color:#1e40af;padding:2px 8px;border-radius:10px">@item.LanguageCode.ToUpper()</span></td>
+                        <td style="font-size:12px">@(item.PublishedAt?.ToString("dd.MM.yyyy") ?? "Taslak")</td>
+                        <td>
+                            @if (item.IsActive)
+                            { <span class="status-badge status-active">● Aktif</span> }
+                            else
+                            { <span class="status-badge status-inactive">● Pasif</span> }
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px">
+                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-outline btn-sm">✏️</a>
+                                <form method="post" asp-action="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Silmek istiyor musunuz?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" style="text-align:center;padding:32px;color:#94a3b8">Kayıt bulunamadı.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (totalPages > 1)
+    {
+        <div class="card-body" style="padding-top:8px">
+            <div class="pagination">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <a href="@Url.Action("Index", new { page = i, search = ViewBag.Search })" class="page-btn @(i == page ? "active" : "")">@i</a>
+                }
+            </div>
+        </div>
+    }
+</div>

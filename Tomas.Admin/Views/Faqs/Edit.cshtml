@@ -1,0 +1,62 @@
+@model Tomas.Application.DTOs.FaqFormDto
+@{
+    ViewData["Title"] = "SSS Düzenle";
+}
+
+<div class="breadcrumb">
+    <a href="@Url.Action("Index","Faqs")">SSS</a>
+    <span>›</span>
+    <span>Düzenle</span>
+</div>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden"/>
+    <div asp-validation-summary="All" class="validation-summary-errors"></div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start">
+        <div class="card">
+            <div class="card-header"><h2>Soru & Cevap</h2></div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label">Soru *</label>
+                    <textarea asp-for="Question" class="form-control" rows="3" required></textarea>
+                    <span asp-validation-for="Question" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Cevap *</label>
+                    <textarea asp-for="Answer" class="form-control" rows="8" required></textarea>
+                    <span asp-validation-for="Answer" class="field-validation-error"></span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <div class="card-header"><h2>Ayarlar</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Dil</label>
+                        <select asp-for="LanguageCode" class="form-control">
+                            <option value="tr">Türkçe</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sıralama</label>
+                        <input asp-for="SortOrder" type="number" min="0" class="form-control"/>
+                        <span asp-validation-for="SortOrder" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-check form-group">
+                        <input asp-for="IsActive" type="checkbox" id="isActive"/>
+                        <label for="isActive" class="form-label" style="margin:0">Aktif</label>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+                <button type="submit" class="btn btn-primary">💾 Güncelle</button>
+                <a href="@Url.Action("Index")" class="btn btn-outline">İptal</a>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,93 @@
+@model Tomas.Application.DTOs.TestimonialFormDto
+@{
+    ViewData["Title"] = "Müşteri Yorumu Düzenle";
+}
+
+<div class="breadcrumb">
+    <a href="@Url.Action("Index","Testimonials")">Müşteri Yorumları</a>
+    <span>›</span>
+    <span>Düzenle</span>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden"/>
+    <div asp-validation-summary="All" class="validation-summary-errors"></div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start">
+        <div class="card">
+            <div class="card-header"><h2>Yorum Bilgileri</h2></div>
+            <div class="card-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">İsim *</label>
+                        <input asp-for="AuthorName" class="form-control" required/>
+                        <span asp-validation-for="AuthorName" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ünvan</label>
+                        <input asp-for="AuthorTitle" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Şirket</label>
+                    <input asp-for="Company" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Yorum *</label>
+                    <textarea asp-for="Content" class="form-control" rows="6" required></textarea>
+                    <span asp-validation-for="Content" class="field-validation-error"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Puan (1-5) *</label>
+                    <select asp-for="Rating" class="form-control">
+                        <option value="5">★★★★★ (5)</option>
+                        <option value="4">★★★★☆ (4)</option>
+                        <option value="3">★★★☆☆ (3)</option>
+                        <option value="2">★★☆☆☆ (2)</option>
+                        <option value="1">★☆☆☆☆ (1)</option>
+                    </select>
+                    <span asp-validation-for="Rating" class="field-validation-error"></span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <div class="card-header"><h2>Ayarlar</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Dil</label>
+                        <select asp-for="LanguageCode" class="form-control">
+                            <option value="tr">Türkçe</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sıralama</label>
+                        <input asp-for="SortOrder" type="number" min="0" class="form-control"/>
+                        <span asp-validation-for="SortOrder" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-check form-group">
+                        <input asp-for="IsActive" type="checkbox" id="isActive"/>
+                        <label for="isActive" class="form-label" style="margin:0">Aktif</label>
+                    </div>
+                    <hr class="section-divider"/>
+                    <div class="form-group">
+                        <label class="form-label">Avatar Görseli</label>
+                        @if (!string.IsNullOrEmpty(Model.AvatarPath))
+                        {
+                            <img src="@Model.AvatarPath" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-bottom:8px;display:block"/>
+                        }
+                        <input type="file" name="avatarFile" accept=".jpg,.jpeg,.png,.webp" class="form-control"/>
+                    </div>
+                    <input asp-for="AvatarPath" type="hidden"/>
+                </div>
+            </div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+                <button type="submit" class="btn btn-primary">💾 Güncelle</button>
+                <a href="@Url.Action("Index")" class="btn btn-outline">İptal</a>
+            </div>
+        </div>
+    </div>
+</form>
