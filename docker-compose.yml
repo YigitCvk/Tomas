@@ -1,0 +1,59 @@
+networks:
+  tomas-network:
+    driver: bridge
+
+volumes:
+  tomas-db:
+
+services:
+  tomas-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.api
+    container_name: tomas-api
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Data Source=/data/tomas.db
+    volumes:
+      - tomas-db:/data
+    ports:
+      - "8001:8080"
+    networks:
+      - tomas-network
+
+  tomas-admin:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.admin
+    container_name: tomas-admin
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Data Source=/data/tomas.db
+    volumes:
+      - tomas-db:/data
+    ports:
+      - "8002:8080"
+    networks:
+      - tomas-network
+    depends_on:
+      - tomas-api
+
+  tomas-frontend:
+    build:
+      context: ./frontend/tomas-public
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://46.225.166.254:8001
+        - NEXT_PUBLIC_SITE_URL=http://46.225.166.254:8003
+    container_name: tomas-frontend
+    restart: unless-stopped
+    ports:
+      - "8003:3000"
+    networks:
+      - tomas-network
+    depends_on:
+      - tomas-api

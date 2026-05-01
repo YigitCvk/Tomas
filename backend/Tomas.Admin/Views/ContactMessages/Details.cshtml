@@ -1,0 +1,113 @@
+@using Tomas.Application.DTOs
+@model ContactMessageDto
+@{
+    ViewData["Title"] = "Mesaj Detayı";
+}
+
+<div class="breadcrumb">
+    <a href="@Url.Action("Index","ContactMessages")">Mesajlar</a>
+    <span class="breadcrumb-sep">›</span><span>#@Model.Id</span>
+</div>
+
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start">
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h2>Mesaj İçeriği</h2>
+                @if (!Model.IsRead) { <span class="status-badge status-unread">Yeni</span> }
+                else if (Model.IsReplied) { <span class="status-badge status-active">Yanıtlandı</span> }
+                else { <span class="status-badge status-read">Okundu</span> }
+            </div>
+            <div class="card-body">
+                <div style="background:#f8fafc;border-radius:8px;padding:20px;font-size:15px;line-height:1.7;color:#334155;white-space:pre-wrap">@Model.Message</div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.AdminNote))
+        {
+            <div class="card" style="margin-top:16px">
+                <div class="card-header"><h2>Admin Notu</h2></div>
+                <div class="card-body"><p style="color:#64748b">@Model.AdminNote</p></div>
+            </div>
+        }
+
+        @if (!Model.IsReplied)
+        {
+            <div class="card" style="margin-top:16px">
+                <div class="card-header"><h2>Yanıtlandı Olarak İşaretle</h2></div>
+                <div class="card-body">
+                    <form method="post" asp-action="MarkReplied" asp-route-id="@Model.Id">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label class="form-label">Admin Notu (opsiyonel)</label>
+                            <textarea name="adminNote" class="form-control" rows="3" placeholder="İç not ekleyin..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">✅ Yanıtlandı Olarak İşaretle</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div>
+        <div class="card">
+            <div class="card-header"><h2>Gönderici Bilgileri</h2></div>
+            <div class="card-body">
+                <div style="display:flex;flex-direction:column;gap:16px">
+                    <div>
+                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:4px">Ad Soyad</div>
+                        <div style="font-weight:600">@Model.FullName</div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.CompanyName))
+                    {
+                        <div>
+                            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:4px">Şirket</div>
+                            <div>@Model.CompanyName</div>
+                        </div>
+                    }
+                    <div>
+                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:4px">E-posta</div>
+                        <a href="mailto:@Model.Email" style="color:#0f2550;font-weight:500">@Model.Email</a>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Phone))
+                    {
+                        <div>
+                            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:4px">Telefon</div>
+                            <div>@Model.Phone</div>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.Country))
+                    {
+                        <div>
+                            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:4px">Ülke</div>
+                            <div>@Model.Country</div>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.InterestedServiceTitle))
+                    {
+                        <div>
+                            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:4px">İlgilenilen Hizmet</div>
+                            <div>@Model.InterestedServiceTitle</div>
+                        </div>
+                    }
+                    <hr style="border:none;border-top:1px solid #e2e8f0"/>
+                    <div>
+                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:4px">Tarih</div>
+                        <div>@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.IpAddress))
+                    {
+                        <div>
+                            <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:4px">IP Adresi</div>
+                            <div style="font-size:12px;color:#94a3b8">@Model.IpAddress</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:16px">
+            <a href="@Url.Action("Index","ContactMessages")" class="btn btn-outline" style="width:100%;justify-content:center">← Listeye Dön</a>
+        </div>
+    </div>
+</div>

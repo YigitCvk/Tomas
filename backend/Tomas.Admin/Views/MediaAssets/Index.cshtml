@@ -1,0 +1,109 @@
+@using Tomas.Domain.Entities
+@model List<MediaAsset>
+@{
+    ViewData["Title"] = "Medya Kütüphanesi";
+    int page = ViewBag.Page;
+    int pageSize = ViewBag.PageSize;
+    int total = ViewBag.Total;
+    int totalPages = (int)Math.Ceiling(total / (double)pageSize);
+}
+
+<div class="card" style="margin-bottom:20px">
+    <div class="card-header"><h2>Dosya Yükle</h2></div>
+    <div class="card-body">
+        <form method="post" asp-action="Upload" enctype="multipart/form-data" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+            @Html.AntiForgeryToken()
+            <div style="flex:1;min-width:200px">
+                <label class="form-label">Görsel Seç</label>
+                <input type="file" name="file" accept=".jpg,.jpeg,.png,.webp" class="form-control" required/>
+                <small style="color:#94a3b8;font-size:12px">JPG, JPEG, PNG, WEBP — Max 5MB</small>
+            </div>
+            <button type="submit" class="btn btn-gold">📤 Yükle</button>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Medya Kütüphanesi <span style="font-weight:400;font-size:13px;color:#64748b">(Toplam: @total)</span></h2>
+    </div>
+    <div class="card-body" style="padding-bottom:8px">
+        <form method="get" class="search-bar" style="margin-bottom:16px">
+            <input type="text" name="search" value="@ViewBag.Search" placeholder="Dosya adı veya alt metin ara..." class="form-control"/>
+            <button type="submit" class="btn btn-outline btn-sm">🔍 Ara</button>
+            @if (!string.IsNullOrEmpty(ViewBag.Search?.ToString()))
+            {
+                <a href="@Url.Action("Index")" class="btn btn-outline btn-sm">✕ Temizle</a>
+            }
+        </form>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div style="text-align:center;padding:60px;color:#94a3b8">
+            <div style="font-size:48px;margin-bottom:12px">🖼️</div>
+            <p>Henüz yüklü görsel yok.</p>
+        </div>
+    }
+    else
+    {
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;padding:20px">
+            @foreach (var item in Model)
+            {
+                <div style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;background:#fff;position:relative" id="asset-@item.Id">
+                    <div style="height:130px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative">
+                        @if (item.ContentType.StartsWith("image/"))
+                        {
+                            <img src="@item.FilePath" alt="@item.AltText" style="width:100%;height:100%;object-fit:cover"/>
+                        }
+                        else
+                        {
+                            <span style="font-size:36px">📄</span>
+                        }
+                    </div>
+                    <div style="padding:10px">
+                        <div style="font-size:12px;font-weight:500;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="@item.OriginalFileName">@item.OriginalFileName</div>
+                        <div style="font-size:11px;color:#94a3b8;margin-top:2px">@((item.FileSize / 1024.0).ToString("0.0")) KB · @item.CreatedAt.ToString("dd.MM.yy")</div>
+                        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+                            <button onclick="copyUrl('@item.FilePath')" class="btn btn-outline btn-sm" style="font-size:11px;padding:4px 8px">📋 URL</button>
+                            <form method="post" asp-action="Delete" asp-route-id="@item.Id" onsubmit="return confirm('Bu dosyayı silmek istediğinize emin misiniz?')" style="display:inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger btn-sm" style="font-size:11px;padding:4px 8px">🗑️</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (totalPages > 1)
+    {
+        <div class="card-body" style="padding-top:8px">
+            <div class="pagination">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <a href="@Url.Action("Index", new { page = i, search = ViewBag.Search })"
+                       class="page-btn @(i == page ? "active" : "")">@i</a>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div id="copy-toast" style="display:none;position:fixed;bottom:24px;right:24px;background:#10b981;color:white;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.15)">
+    ✅ URL kopyalandı!
+</div>
+
+@section Scripts {
+<script>
+function copyUrl(path) {
+    const url = window.location.origin + path;
+    navigator.clipboard.writeText(url).then(() => {
+        const toast = document.getElementById('copy-toast');
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    });
+}
+</script>
+}

@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+COPY ["Tomas.Api/Tomas.Api.csproj", "Tomas.Api/"]
+COPY ["Tomas.Application/Tomas.Application.csproj", "Tomas.Application/"]
+COPY ["Tomas.Domain/Tomas.Domain.csproj", "Tomas.Domain/"]
+COPY ["Tomas.Infrastructure/Tomas.Infrastructure.csproj", "Tomas.Infrastructure/"]
+RUN dotnet restore "Tomas.Api/Tomas.Api.csproj"
+COPY . .
+WORKDIR "/src/Tomas.Api"
+RUN dotnet publish -c Release -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "Tomas.Api.dll"]

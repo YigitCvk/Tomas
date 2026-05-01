@@ -1,0 +1,22 @@
+# .NET
+backend/*/bin/
+backend/*/obj/
+backend/**/*.user
+backend/logs/
+
+# SQLite DB (sunucuda volume ile yönetilir)
+backend/tomas.db
+backend/tomas.db-shm
+backend/tomas.db-wal
+
+# UpdateDb tek seferlik araç
+backend/UpdateDb/
+
+# Next.js
+frontend/tomas-public/.next/
+frontend/tomas-public/node_modules/
+frontend/tomas-public/.env.local
+
+# OS
+.DS_Store
+Thumbs.db

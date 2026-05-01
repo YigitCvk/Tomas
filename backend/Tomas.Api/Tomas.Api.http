@@ -1,0 +1,6 @@
+@Tomas.Api_HostAddress = http://localhost:5238
+
+GET {{Tomas.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

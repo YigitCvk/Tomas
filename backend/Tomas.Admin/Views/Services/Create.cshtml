@@ -1,0 +1,133 @@
+@model Tomas.Application.DTOs.ServiceFormDto
+@{
+    ViewData["Title"] = "Yeni Hizmet";
+}
+
+<div class="breadcrumb">
+    <a href="@Url.Action("Index","Services")">Hizmetler</a>
+    <span class="breadcrumb-sep">›</span>
+    <span>Yeni Hizmet</span>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="validation-summary-errors"></div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start">
+        <div>
+            <div class="card">
+                <div class="card-header"><h2>Hizmet Bilgileri</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Başlık *</label>
+                        <input asp-for="Title" class="form-control" oninput="autoSlug(this.value)" required/>
+                        <span asp-validation-for="Title" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Slug</label>
+                            <div style="display:flex;gap:8px">
+                                <input asp-for="Slug" id="slugInput" class="form-control" placeholder="otomatik-olusturulur"/>
+                                <button type="button" onclick="generateSlug()" class="btn btn-outline btn-sm" style="white-space:nowrap">🔄 Üret</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">İkon (emoji)</label>
+                            <input asp-for="Icon" class="form-control" placeholder="📦"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kısa Açıklama</label>
+                        <textarea asp-for="ShortDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">İçerik (HTML)</label>
+                        <textarea asp-for="Content" class="form-control" rows="10"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:16px">
+                <div class="card-header"><h2>SEO Alanları</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Meta Başlık</label>
+                        <input asp-for="MetaTitle" class="form-control" placeholder="Sayfa başlığı"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Meta Açıklama</label>
+                        <textarea asp-for="MetaDescription" class="form-control" rows="2" placeholder="155 karakter önerilen"></textarea>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Canonical URL</label>
+                            <input asp-for="CanonicalUrl" class="form-control" placeholder="https://..."/>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">OG Görsel Yolu</label>
+                            <input asp-for="OgImagePath" class="form-control" placeholder="/uploads/..."/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <div class="card-header"><h2>Ayarlar</h2></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">Dil</label>
+                        <select asp-for="LanguageCode" class="form-control">
+                            <option value="tr">Türkçe</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sıralama</label>
+                        <input asp-for="SortOrder" type="number" class="form-control" value="0"/>
+                    </div>
+                    <div class="form-check form-group">
+                        <input asp-for="IsActive" type="checkbox" id="isActive"/>
+                        <label for="isActive" class="form-label" style="margin:0">Aktif</label>
+                    </div>
+                    <hr class="section-divider"/>
+                    <div class="form-group">
+                        <label class="form-label">Görsel</label>
+                        <input type="file" name="imageFile" accept=".jpg,.jpeg,.png,.webp" class="form-control"/>
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <img src="@Model.ImagePath" alt="Görsel" class="image-preview" style="margin-top:8px"/>
+                        }
+                    </div>
+                    <input asp-for="ImagePath" type="hidden"/>
+                </div>
+            </div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+                <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+                <a href="@Url.Action("Index")" class="btn btn-outline">İptal</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    let titleChanged = false;
+    function autoSlug(val) {
+        if (!titleChanged && document.getElementById('slugInput').value === '') {
+            generateSlugFromTitle(val);
+        }
+    }
+    document.getElementById('slugInput').addEventListener('input', () => { titleChanged = true; });
+    function generateSlug() {
+        const title = document.querySelector('[name="Title"]').value;
+        generateSlugFromTitle(title);
+    }
+    function generateSlugFromTitle(title) {
+        fetch('@Url.Action("GenerateSlug","Services")' + '?title=' + encodeURIComponent(title))
+            .then(r => r.json())
+            .then(slug => { document.getElementById('slugInput').value = slug; });
+    }
+</script>
+}
