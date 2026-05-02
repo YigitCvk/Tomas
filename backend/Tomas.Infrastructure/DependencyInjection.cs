@@ -35,6 +35,8 @@ public static class DependencyInjection
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
+        services.AddHttpClient();
+        services.AddScoped<RevalidationService>();
         services.AddScoped<MediaService>();
         services.AddScoped<PublicContentService>();
         services.AddScoped<ContactService>();

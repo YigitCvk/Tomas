@@ -8,8 +8,13 @@ namespace Tomas.Infrastructure.Services;
 public class AdminContentService
 {
     private readonly AppDbContext _db;
+    private readonly RevalidationService _revalidation;
 
-    public AdminContentService(AppDbContext db) => _db = db;
+    public AdminContentService(AppDbContext db, RevalidationService revalidation)
+    {
+        _db = db;
+        _revalidation = revalidation;
+    }
 
     // ── Services ──────────────────────────────────────────────────────────────
 
@@ -47,6 +52,7 @@ public class AdminContentService
         };
         _db.Services.Add(entity);
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
         return entity;
     }
 
@@ -68,6 +74,7 @@ public class AdminContentService
         entity.SortOrder = dto.SortOrder;
         entity.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
     }
 
     public async Task SoftDeleteServiceAsync(int id)
@@ -77,6 +84,7 @@ public class AdminContentService
         entity.IsDeleted = true;
         entity.DeletedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
     }
 
     // ── Blog Posts ─────────────────────────────────────────────────────────────
@@ -116,6 +124,7 @@ public class AdminContentService
         };
         _db.BlogPosts.Add(entity);
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
         return entity;
     }
 
@@ -138,6 +147,7 @@ public class AdminContentService
         entity.SortOrder = dto.SortOrder;
         entity.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
     }
 
     public async Task SoftDeleteBlogPostAsync(int id)
@@ -147,6 +157,7 @@ public class AdminContentService
         entity.IsDeleted = true;
         entity.DeletedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
     }
 
     // ── Pages ──────────────────────────────────────────────────────────────────
@@ -184,6 +195,7 @@ public class AdminContentService
         };
         _db.Pages.Add(entity);
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
         return entity;
     }
 
@@ -204,6 +216,7 @@ public class AdminContentService
         entity.SortOrder = dto.SortOrder;
         entity.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
     }
 
     public async Task SoftDeletePageAsync(int id)
@@ -213,6 +226,7 @@ public class AdminContentService
         entity.IsDeleted = true;
         entity.DeletedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
     }
 
     // ── FAQs ───────────────────────────────────────────────────────────────────
@@ -243,6 +257,7 @@ public class AdminContentService
         };
         _db.Faqs.Add(entity);
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
         return entity;
     }
 
@@ -256,6 +271,7 @@ public class AdminContentService
         entity.SortOrder = dto.SortOrder;
         entity.UpdatedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
     }
 
     public async Task SoftDeleteFaqAsync(int id)
@@ -265,6 +281,7 @@ public class AdminContentService
         entity.IsDeleted = true;
         entity.DeletedAt = DateTime.UtcNow;
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
     }
 
     // ── Hero Slides ────────────────────────────────────────────────────────────
@@ -426,6 +443,7 @@ public class AdminContentService
             }
         }
         await _db.SaveChangesAsync();
+        _revalidation.TriggerAsync();
     }
 
     // ── Media Assets ───────────────────────────────────────────────────────────

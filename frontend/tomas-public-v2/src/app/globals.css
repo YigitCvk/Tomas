@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Bauhaus Color System ── */
+  --color-brand-black: #1a1a1a;
+  --color-brand-yellow: #ffcc00;
+  --color-brand-red: #e63b2e;
+  --color-brand-blue: #0055ff;
+  --color-brand-sand: #f5f0e8;
+
+  /* ── Fonts ── */
+  --font-sans:    var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-grotesk: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  color: #1a1a1a;
+  background: #f5f0e8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: #ffcc00; color: #1a1a1a; }
+
+:focus-visible {
+  outline: 2px solid #ffcc00;
+  outline-offset: 2px;
+}
+
+/* Prose overrides for brutalist style */
+.prose h2 {
+  font-family: var(--font-grotesk);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #1a1a1a;
+}
+.prose h3 {
+  font-family: var(--font-grotesk);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 1.5rem 0 0.5rem;
+}
+.prose p  { margin-bottom: 1rem; line-height: 1.75; color: rgba(26,26,26,0.75); }
+.prose ul { list-style: none; padding-left: 0; margin-bottom: 1rem; }
+.prose ul li {
+  padding-left: 1.25rem;
+  position: relative;
+  margin-bottom: 0.5rem;
+  line-height: 1.7;
+  color: rgba(26,26,26,0.75);
+}
+.prose ul li::before {
+  content: "▪";
+  position: absolute;
+  left: 0;
+  color: #ffcc00;
+  font-size: 1rem;
+}
+.prose ol { padding-left: 1.5rem; margin-bottom: 1rem; counter-reset: item; list-style: none; }
+.prose ol li {
+  counter-increment: item;
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+  color: rgba(26,26,26,0.75);
+  padding-left: 0.5rem;
+}
+.prose ol li::before {
+  content: counter(item, decimal-leading-zero);
+  font-family: var(--font-grotesk);
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-right: 0.75rem;
+}
+.prose strong { font-weight: 700; color: #1a1a1a; }
+.prose a { color: #0055ff; text-decoration: underline; }

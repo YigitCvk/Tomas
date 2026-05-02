@@ -33,6 +33,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__DefaultConnection=Data Source=/data/tomas.db
+      - Frontend__RevalidateUrl=http://tomas-frontend:3000/api/revalidate
+      - Frontend__RevalidateSecret=tomas-revalidate-secret-2024
     volumes:
       - tomas-db:/data
     ports:
@@ -51,8 +53,46 @@ services:
         - NEXT_PUBLIC_SITE_URL=http://46.225.166.254:8003
     container_name: tomas-frontend
     restart: unless-stopped
+    environment:
+      - REVALIDATE_SECRET=tomas-revalidate-secret-2024
     ports:
       - "8003:3000"
+    networks:
+      - tomas-network
+    depends_on:
+      - tomas-api
+
+  tomas-frontend-v2:
+    build:
+      context: ./frontend/tomas-public-v2
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://46.225.166.254:8001
+        - NEXT_PUBLIC_SITE_URL=http://46.225.166.254:8004
+    container_name: tomas-frontend-v2
+    restart: unless-stopped
+    environment:
+      - REVALIDATE_SECRET=tomas-revalidate-secret-2024
+    ports:
+      - "8004:3000"
+    networks:
+      - tomas-network
+    depends_on:
+      - tomas-api
+
+  tomas-frontend-v3:
+    build:
+      context: ./frontend/tomas-public-v3
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://46.225.166.254:8001
+        - NEXT_PUBLIC_SITE_URL=http://46.225.166.254:8005
+    container_name: tomas-frontend-v3
+    restart: unless-stopped
+    environment:
+      - REVALIDATE_SECRET=tomas-revalidate-secret-2024
+    ports:
+      - "8005:3000"
     networks:
       - tomas-network
     depends_on:
